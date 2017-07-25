@@ -17,6 +17,9 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        myTimer.delegate = self
+
         setView()
     }
     
@@ -38,11 +41,45 @@ class ViewController: UIViewController {
         if myTimer.isOn {
             myTimer.stopTimer()
         } else {
-            myTimer.startTimer(20*60.0)
+            myTimer.startTimer(3)
         }
         setView()
     }
+    
+    // MARK: - UIAlertController
+    
+    func setupAlertController() {
+        let alert = UIAlertController(title: "Wake up!", message: "Get up ya lazy bum!", preferredStyle: .alert)
+        
+        
+        let dismissAction = UIAlertAction(title: "Dismiss", style: .cancel) { (_) in
+            self.setView()
+        }
+        
+        alert.addAction(dismissAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
+// MARK: - TimerDelegate 
 
+extension ViewController: TimerDelegate {
+    
+    func timerSecondTick() {
+        updateTimerLabel()
+    }
+    
+    func timerCompleted() {
+        setView()
+        // Appear the notification and alertcontroller
+        setupAlertController()
+    }
+    
+    func timerStopped() {
+        setView()
+        // Cancel notification
+    }
+}
 
