@@ -52,10 +52,12 @@ class MyTimer: NSObject {
     func startTimer(_ time: TimeInterval) {
         if !isOn {
             timeRemaining = time
-            self.secondTick()
-            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (_) in
+            DispatchQueue.main.async {
                 self.secondTick()
-            })
+                self.timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (_) in
+                    self.secondTick()
+                })
+            }
         }
     }
     
