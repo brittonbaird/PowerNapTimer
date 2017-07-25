@@ -8,10 +8,18 @@
 
 import UIKit
 
+protocol TimerDelegate: class {
+    func timerSecondTick()
+    func timerCompleted()
+    func timerStopped()
+}
+
 class MyTimer: NSObject {
     
     var timeRemaining: TimeInterval?
     var timer: Timer?
+    
+    weak var delegate: TimerDelegate?
     
     var isOn: Bool {
         if timeRemaining != nil {
@@ -31,17 +39,20 @@ class MyTimer: NSObject {
     fileprivate func secondTick() {
         guard let timeRemaining = timeRemaining else {return}
         if timeRemaining > 0 {
+            delegate?.timerSecondTick()
             self.timeRemaining = timeRemaining - 1
             print(timeRemaining)
         } else {
             timer?.invalidate()
             self.timeRemaining = nil
+            delegate?.timerCompleted()
         }
     }
     
     func startTimer(_ time: TimeInterval) {
         if !isOn {
             timeRemaining = time
+            self.secondTick()
             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (_) in
                 self.secondTick()
             })
@@ -51,6 +62,7 @@ class MyTimer: NSObject {
     func stopTimer() {
         if isOn {
             timeRemaining = nil
+            delegate?.timerStopped()
         }
     }
 }
